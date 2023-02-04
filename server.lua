@@ -10,19 +10,25 @@ end
 if Config.UseESX then
     ESX.RegisterServerCallback('angelicxs-billing:CurrentInvoices:ESX',function(source, cb)
         local xPlayer = ESX.GetPlayerFromId(source) 
-        MySQL.Async.fetchAll('SELECT * FROM angelicxs_billing WHERE identifier = @identifier', {
-            ['@identifier'] = xPlayer.identifier,
-            }, function (result)
-            cb(result)
+        MySQL.query('SELECT * FROM angelicxs_billing WHERE identifier = ?', {xPlayer.identifier}, function(result)
+            if result then
+                local var = tonumber(#result)
+                if var >= 1 then
+                    cb(result)
+                end
+            end
         end)
     end)
 elseif Config.UseQBCore then
     QBCore.Functions.CreateCallback('angelicxs-billing:CurrentInvoices:QBCore', function(source, cb)
         local Player = QBCore.Functions.GetPlayer(source)
-        MySQL.Async.fetchAll('SELECT * FROM angelicxs_billing WHERE identifier = @identifier', {
-            ['@identifier'] = Player.PlayerData.citizenid,
-            }, function (result)
-            cb(result)
+        MySQL.query('SELECT * FROM angelicxs_billing WHERE identifier = ?', {Player.PlayerData.citizenid}, function(result)
+            if result then
+                local var = tonumber(#result)
+                if var >= 1 then
+                    cb(result)
+                end
+            end
         end)
     end)
 end
